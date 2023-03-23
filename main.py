@@ -37,12 +37,14 @@ NOTAS:
 
 """
 import os
+import itertools
 
 directory_path = './input/'
-output_path = "./output/PIX"
+output_path = "./output/P"
 extension = '.TXT'
 
 modified_lines_TED = []
+next_line = "" # Ferramenta de iteração
 
 # Contagem do arquivo de entrada
 contagem_lotes_input = 0
@@ -82,12 +84,12 @@ for file_name in txt_files:
     contagem_lotes_input = 0
     contagem_lotes_output = 0
     modified_lines_TED = []
-
+    next_line = ""
 
     # Lê cada linha do arquivo na fila e aplica a lógica
     with open(os.path.join(directory_path, file_name)) as file:
-
-        for idx, line in enumerate(file.readlines()):
+        lines = file.readlines()
+        for idx, line in enumerate(lines):
             """* CAPTANDO HEADER DO ARQUIVO - sem mudancas"""
             if line[7] == "0":
                 modified_lines_TED.append(line)
@@ -178,18 +180,25 @@ for file_name in txt_files:
                         + modified_line[114:]
                 )
 
-                # Gambiarra
-                # for i in range(idx+1):  # ler até a linha desejada
-                #     linha_seguinte = file.readline()
-                # print(linha_seguinte,'z')
+                # Auste referente ao erro do sypag
+                """
+                Observe, precisamos do código abaixo pois o arquivo do 
+                syspag, nos registros detalhe do tipo A traz o CPF de 
+                maneira errônea (sim, têm um erro na formação do file
+                do syspag). Sendo assim, pegamos a informação de CNPJ 
+                que está correta no registro B, abaixo A e insere no
+                registro A que será salvo.
+                """
+                if idx < len(lines) - 1:
+                    next_line = next(itertools.islice(lines, idx + 1, None))
 
                 modified_line = (
                         modified_line[:203]
-                        + '02732968000138' #02.732.968/0001-38
+                        + next_line[18:32] # Pegando CPF da próxima linha
                         + modified_line[217:]
                 )
-                modified_lines_TED.append(modified_line)
 
+                modified_lines_TED.append(modified_line)
 
             """
             * CAPTANDO TRAILLER DO LOTE
@@ -282,7 +291,7 @@ for file_name in txt_files:
     )
 
     # Escreve o arquivo de saída
-    output_file = open(output_path + file_name, 'w')
+    output_file = open(output_path + file_name[4:], 'w')
     for i in modified_lines_TED:
         output_file.write(f"{i}")
     output_file.close()
