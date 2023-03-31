@@ -43,13 +43,15 @@ directory_path = './input/'
 output_path = "./output/P"
 extension = '.TXT'
 
+
+
+# Variaveis do arquivo de entrada
+contagem_lotes_input = 0
+
+# Variaveis do arquivo de saida
 modified_lines_TED = []
 next_line = "" # Ferramenta de iteração
 
-# Contagem do arquivo de entrada
-contagem_lotes_input = 0
-
-# Contagem do arquivo de saida
 contagem_lotes_output = 0
 contagem_lotes_output_str = ""
 
@@ -80,11 +82,12 @@ txt_files = get_files_with_ext(directory_path, extension) # Instancia a função
 # Começo do tratamento
 for file_name in txt_files:
     # Zerando contagens para cada novo arquivo processado
-    contagem_registros_output = 0
     contagem_lotes_input = 0
+    contagem_registros_output = 0
     contagem_lotes_output = 0
     modified_lines_TED = []
     next_line = ""
+    block_type = ""
 
     # Lê cada linha do arquivo na fila e aplica a lógica
     with open(os.path.join(directory_path, file_name)) as file:
@@ -183,7 +186,7 @@ for file_name in txt_files:
                 # Auste referente ao erro do sypag
                 """
                 Observe, precisamos do código abaixo pois o arquivo do 
-                syspag, nos registros detalhe do tipo A traz o CPF de 
+                syspag, nos registros detalhe do tipo A traz o CNPJ de 
                 maneira errônea (sim, têm um erro na formação do file
                 do syspag). Sendo assim, pegamos a informação de CNPJ 
                 que está correta no registro B, abaixo A e insere no
@@ -194,7 +197,7 @@ for file_name in txt_files:
 
                 modified_line = (
                         modified_line[:203]
-                        + next_line[18:32] # Pegando CPF da próxima linha
+                        + next_line[18:32] # Pegando CNPJ da próxima linha
                         + modified_line[217:]
                 )
 
